@@ -23,5 +23,4 @@ location /ws {proxy_redirect off;proxy_intercept_errors on;proxy_pass http://127
 
 
 
- 前端修改自 [Akile]([https://markdown.com.cn](https://github.com/akile-network/akile_monitor  )。
-
+ 前端修改自 [Akile](https://github.com/akile-network/akile_monitor)。
