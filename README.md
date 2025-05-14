@@ -4,7 +4,7 @@
 ### linux
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client_install.sh)
-bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client/install.sh) http://your_server_ip:port
+bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client_install.sh) http://your_server_ip:port
 ```
 客户端配置格式：http://1.1.1.1:9999
 建议使用域名
