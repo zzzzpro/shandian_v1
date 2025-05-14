@@ -1,12 +1,19 @@
 # 闪电云探针监控面板
 
 ## 客户端安装与升级
+### linux
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client_install.sh)
 bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client/install.sh) http://your_server_ip:port
 ```
 客户端配置格式：http://1.1.1.1:9999
 建议使用域名
+### windows
+下载tag中最新的exe
+cmd 中 首先执行 status_client_x64.exe serverurl
+
+安装成服务使用管理员执行 status_client_x64.exe install
+
 
 ## 服务端安装
 ```
