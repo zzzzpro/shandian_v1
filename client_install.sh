@@ -73,13 +73,13 @@ config_after_install() {
 }
 install_client(){
     echo -e "开始安装 闪电监控 客户端 "
-    last_version=$(curl -Ls "https://api.github.com/repos/zzzzpro/shandian/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    last_version=$(curl -Ls "https://api.github.com/repos/zzzzpro/shandian_v1/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     if [[ ! -n "$last_version" ]]; then
         echo -e "${red}检测 闪电监控 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 闪电监控 版本安装${plain}"
         exit 1
     fi
     echo -e "检测到 闪电监控 最新版本：${last_version}，开始安装"
-    wget -N --no-check-certificate -O /usr/local/shandian_status-${arch}.tar.gz https://github.com/zzzzpro/shandian/releases/download/${last_version}/shandian_status-${arch}.tar.gz
+    wget -N --no-check-certificate -O /usr/local/shandian_status-${arch}.tar.gz https://github.com/zzzzpro/shandian_v1/releases/download/${last_version}/shandian_status-${arch}.tar.gz
     if [[ $? -ne 0 ]]; then
         echo -e "${red}下载 闪电监控 失败，请确保你的服务器能够下载 Github 的文件${plain}"
         exit 1
