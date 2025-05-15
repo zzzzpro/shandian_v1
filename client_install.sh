@@ -101,7 +101,7 @@ install_client(){
         exit 1
     fi
     echo -e "检测到 闪电监控 最新版本：${last_version}，开始安装"
-    wget -N --no-check-certificate -O "/usr/local/shandian_status-${arch}.tar.gz" "https://github.com/zzzzpro/shandian_v1/releases/download/${last_version}/shandian_status-${arch}.tar.gz"
+    wget -N --no-check-certificate -O "/usr/local/shandian_status-${arch}.tar.gz" "https://d.coder.date/https://github.com/zzzzpro/shandian_v1/releases/download/${last_version}/shandian_status-${arch}.tar.gz"
     if [[ $? -ne 0 ]]; then
         echo -e "${red}下载 闪电监控 失败，请确保你的服务器能够下载 Github 的文件${plain}"
         exit 1
