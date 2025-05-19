@@ -2,88 +2,88 @@
 
 CLIENT_DIR="/usr/local/shandian_status"
 CLIENT_EXEC_NAME="client"
-SERVICE_NAME="shandian_client.service"
-GITHUB_RELEASES_BASE_URL="https://github.com/zzzzpro/shandian_v1/releases"
-TEMP_DOWNLOAD_DIR="/tmp/shandian_update_$$"
+SERVICE_NAME="shandian_status.service"
+BASE_URL="https://github.com/zzzzpro/shandian_v1/releases"
+
+VERSION_TAG="latest"
+
+TEMP_DIR="/tmp/shandian_update_$$"
 
 error_exit() {
     echo "错误: $1" >&2
-    if [ -d "${TEMP_DOWNLOAD_DIR}" ]; then
-        rm -rf "${TEMP_DOWNLOAD_DIR}"
+    if [ -d "${TEMP_DIR}" ]; then
+        rm -rf "${TEMP_DIR}"
     fi
     exit 1
 }
 
 cleanup() {
-    if [ -d "${TEMP_DOWNLOAD_DIR}" ]; then
-        rm -rf "${TEMP_DOWNLOAD_DIR}"
+    if [ -d "${TEMP_DIR}" ]; then
+        rm -rf "${TEMP_DIR}"
     fi
 }
 trap cleanup EXIT
 
-echo "Shandian V1 客户端更新程序"
+echo "Shandian V1 客户端更新程序 (版本: ${VERSION_TAG})"
 
 if [ "$(id -u)" -ne 0 ]; then
     error_exit "此脚本必须以root用户权限运行。"
 fi
 
-OS_NAME=""
-CLIENT_ARCH_SUFFIX=""
-OS_TYPE_DETECTED=$(uname -s | tr '[:upper:]' '[:lower:]')
-ARCH_DETECTED=$(uname -m)
-
-case ${OS_TYPE_DETECTED} in
-    linux) OS_NAME="linux" ;;
-    darwin) OS_NAME="darwin" ;;
-    *) error_exit "不支持的操作系统: ${OS_TYPE_DETECTED}" ;;
+CLIENT_ARCH=""
+ARCH=$(uname -m)
+case ${ARCH} in
+    x86_64) CLIENT_ARCH="amd64" ;;
+    amd64) CLIENT_ARCH="amd64" ;;
+    aarch64) CLIENT_ARCH="arm64" ;;
+    arm64) CLIENT_ARCH="arm64" ;;
+    *)
+        error_exit "不支持的系统架构: ${ARCH}"
+        ;;
 esac
 
-case ${ARCH_DETECTED} in
-    x86_64 | amd64) CLIENT_ARCH_SUFFIX="amd64" ;;
-    aarch64 | arm64) CLIENT_ARCH_SUFFIX="arm64" ;;
-    *) error_exit "不支持的系统架构: ${ARCH_DETECTED} on ${OS_NAME}" ;;
-esac
-
-if [ -z "${OS_NAME}" ] || [ -z "${CLIENT_ARCH_SUFFIX}" ]; then
-    error_exit "未能确定操作系统或架构。"
+CLIENT_FILE_NAME="client_linux_${CLIENT_ARCH}.tar.gz"
+DOWNLOAD_URL="${BASE_URL}/download/${VERSION_TAG}/${CLIENT_FILE_NAME}"
+if [ "${VERSION_TAG}" == "latest" ]; then
+    DOWNLOAD_URL="${BASE_URL}/latest/download/${CLIENT_FILE_NAME}"
 fi
 
-DOWNLOAD_FILE_NAME="client_${OS_NAME}_${CLIENT_ARCH_SUFFIX}.tar.gz"
-DOWNLOAD_URL="${GITHUB_RELEASES_BASE_URL}/latest/download/${DOWNLOAD_FILE_NAME}"
-echo "系统: ${OS_NAME}-${CLIENT_ARCH_SUFFIX}, 下载: ${DOWNLOAD_FILE_NAME}"
+echo "架构: ${CLIENT_ARCH}, 下载: ${DOWNLOAD_URL}"
 
 echo "正在停止 ${SERVICE_NAME} 服务..."
 if systemctl is-active --quiet ${SERVICE_NAME}; then
     systemctl stop ${SERVICE_NAME} || error_exit "停止 ${SERVICE_NAME} 服务失败。"
 fi
 
-mkdir -p "${TEMP_DOWNLOAD_DIR}" || error_exit "创建临时目录 ${TEMP_DOWNLOAD_DIR} 失败。"
-cd "${TEMP_DOWNLOAD_DIR}" || error_exit "无法进入临时目录 ${TEMP_DOWNLOAD_DIR}。"
+mkdir -p "${TEMP_DIR}" || error_exit "创建临时目录 ${TEMP_DIR} 失败。"
+cd "${TEMP_DIR}" || error_exit "无法进入临时目录 ${TEMP_DIR}。"
 
-echo "正在下载 ${DOWNLOAD_URL}..."
+echo "正在下载客户端..."
 if command -v curl > /dev/null; then
-    curl -L -s -o "${DOWNLOAD_FILE_NAME}" "${DOWNLOAD_URL}"
+    curl -Ls -o "${CLIENT_FILE_NAME}" "${DOWNLOAD_URL}"
 elif command -v wget > /dev/null; then
-    wget -q -O "${DOWNLOAD_FILE_NAME}" "${DOWNLOAD_URL}"
+    wget -q -O "${CLIENT_FILE_NAME}" "${DOWNLOAD_URL}"
 else
-    error_exit "未找到 curl 或 wget。"
+    error_exit "未找到 curl 或 wget，无法下载文件。"
 fi
-if [ $? -ne 0 ] || [ ! -f "${DOWNLOAD_FILE_NAME}" ]; then
-    error_exit "下载 ${DOWNLOAD_FILE_NAME} 失败。"
+
+if [ $? -ne 0 ] || [ ! -f "${CLIENT_FILE_NAME}" ]; then
+    error_exit "下载客户端 ${CLIENT_FILE_NAME} 失败。请检查版本标签 '${VERSION_TAG}' 是否存在以及文件是否可用。"
 fi
 
 echo "正在解压和替换客户端..."
-tar -xzf "${DOWNLOAD_FILE_NAME}" || error_exit "解压 ${DOWNLOAD_FILE_NAME} 失败。"
+tar -xzf "${CLIENT_FILE_NAME}" || error_exit "解压 ${CLIENT_FILE_NAME} 失败。"
 
 EXTRACTED_BINARY_PATH="shandian_status/client"
 if [ ! -f "${EXTRACTED_BINARY_PATH}" ]; then
-    error_exit "解压后未找到 ${EXTRACTED_BINARY_PATH}。"
+    error_exit "解压后未在预期的路径 '${EXTRACTED_BINARY_PATH}' 找到客户端文件。"
 fi
 
 TARGET_CLIENT_FILE="${CLIENT_DIR}/${CLIENT_EXEC_NAME}"
 if [ ! -d "${CLIENT_DIR}" ]; then
-    error_exit "安装目录 ${CLIENT_DIR} 不存在。"
+    error_exit "安装目录 ${CLIENT_DIR} 不存在。请先确保客户端已正确安装。"
 fi
+
 mv "${EXTRACTED_BINARY_PATH}" "${TARGET_CLIENT_FILE}" || error_exit "替换客户端文件 ${TARGET_CLIENT_FILE} 失败。"
 chmod +x "${TARGET_CLIENT_FILE}" || error_exit "为 ${TARGET_CLIENT_FILE} 设置执行权限失败。"
 
@@ -93,7 +93,7 @@ systemctl start ${SERVICE_NAME} || error_exit "启动 ${SERVICE_NAME} 服务失�
 
 sleep 1
 if systemctl is-active --quiet ${SERVICE_NAME}; then
-    echo "客户端更新成功，服务正在运行。"
+    echo "客户端更新成功 (版本: ${VERSION_TAG})，服务正在运行。"
 else
     error_exit "${SERVICE_NAME} 服务未能成功启动。请检查日志。"
 fi
