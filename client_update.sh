@@ -42,7 +42,7 @@ case ${ARCH} in
         ;;
 esac
 
-CLIENT_FILE_NAME="client_linux_${CLIENT_ARCH}.tar.gz"
+CLIENT_FILE_NAME="shandian_status-${CLIENT_ARCH}.tar.gz"
 DOWNLOAD_URL="${BASE_URL}/download/${VERSION_TAG}/${CLIENT_FILE_NAME}"
 if [ "${VERSION_TAG}" == "latest" ]; then
     DOWNLOAD_URL="${BASE_URL}/latest/download/${CLIENT_FILE_NAME}"
