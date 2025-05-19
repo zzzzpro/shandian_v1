@@ -3,7 +3,7 @@
 CLIENT_DIR="/usr/local/shandian_status"
 CLIENT_EXEC_NAME="client"
 SERVICE_NAME="shandian_status.service"
-BASE_URL="https://github.com/zzzzpro/shandian_v1/releases"
+BASE_URL="https://d.coder.date/https://github.com/zzzzpro/shandian_v1/releases"
 
 VERSION_TAG="latest"
 
