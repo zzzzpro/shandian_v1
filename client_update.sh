@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CLIENT_DIR="/root/shandian_client"
+CLIENT_DIR="/usr/local/shandian_status"
 CLIENT_EXEC_NAME="client"
 SERVICE_NAME="shandian_client.service"
 GITHUB_RELEASES_BASE_URL="https://github.com/zzzzpro/shandian_v1/releases"
