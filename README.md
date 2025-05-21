@@ -1,4 +1,5 @@
 # 闪电云探针监控面板
+### demo :  [https://tz.mjj.link](https://tz.mjj.link)。
 
 ## 客户端安装与升级
 ### linux
@@ -6,7 +7,7 @@
 bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client_install.sh)
 bash <(curl -Ls https://raw.githubusercontent.com/zzzzpro/shandian_v1/master/client_install.sh) http://your_server_ip:port
 ```
-客户端配置格式：http://1.1.1.1:9999
+配置格式：http://1.1.1.1:9999
 建议使用域名
 ### windows
 下载tag中最新的exe
@@ -30,4 +31,4 @@ location /ws {proxy_redirect off;proxy_intercept_errors on;proxy_pass http://127
 
 
 
- 前端修改自 [Akile](https://github.com/akile-network/akile_monitor)。
+ 前端修改自 [Akile](https://github.com/akile-network/akile_monitor_fe) , 感谢6B。
